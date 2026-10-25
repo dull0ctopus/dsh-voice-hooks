@@ -1,0 +1,11 @@
+# Voice hooks, inserted into the current DSH profile.
+# Edit these values on the Voice Hooks bundle page in Plugins. They may also be
+# overridden in the profile patch.
+- insert:
+    - id: voice-hooks
+      name: '@local/voice-hooks'
+      config:
+        finished: DeepSeek finished
+        permissionRequired: Permission required
+        inputRequired: Input required
+        sound: /System/Library/Sounds/Ping.aiff
