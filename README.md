@@ -1,6 +1,4 @@
-**A DeepSeek Harness plugin** that speaks configurable macOS messages when DSH needs your input, asks for permission, or finishes all pending work.
-
-一个 DeepSeek Harness 插件：在需要输入、请求权限或完成所有待处理任务时朗读可配置的 macOS 提示。
+A DeepSeek Harness plugin that speaks configurable macOS messages when DSH needs your input, asks for permission, or finishes all pending work.
 
 # Voice Hooks
 
@@ -30,16 +28,16 @@ The form is on the plugin's bundle page; there is no Components sub-page.
 
 ## Install
 
-In **Plugins → Add plugin**, use the private repository's SSH address:
-
-```text
-git+ssh://git@github.com/dull0ctopus/dsh-voice-hooks.git
-```
-
-For a public repository, use:
+In **Plugins → Add plugin**, use the public HTTPS address:
 
 ```text
 https://github.com/dull0ctopus/dsh-voice-hooks.git
+```
+
+SSH is also available when HTTPS is blocked:
+
+```text
+git+ssh://git@github.com/dull0ctopus/dsh-voice-hooks.git
 ```
 
 After installation, enable the bundle. The Host half activates via HMR; a new
