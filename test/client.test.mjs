@@ -55,7 +55,7 @@ function findAll(node, type, out = []) {
 globalThis.window = {
   __ModuleLoader__: {
     load({ id, factory }) {
-      assert.equal(id, '@local/voice-hooks')
+      assert.equal(id, 'dsh-voice-hooks')
       const h = (type, props, ...children) => {
         const merged = { ...(props || {}) }
         if (children.length === 1) merged.children = children[0]
@@ -131,7 +131,7 @@ await import('../client.js')
 
 assert.ok(registration, 'the bundle configuration page must register')
 assert.equal(registration.options.name, 'plugins.bundle.config')
-assert.equal(registration.options.key, '@local/voice-hooks')
+assert.equal(registration.options.key, 'dsh-voice-hooks')
 assert.equal(registration.options.locale, 'voiceHooks')
 assert.equal(typeof registration.component, 'function')
 assert.deepEqual(formCalls, ['voice-hooks'])
@@ -148,7 +148,7 @@ const rendered = registration.component({ t: (key) => key, view: 'page' })
 assert.ok(rendered, 'the page component must render')
 const hideStyle = find(rendered, 'style')
 assert.ok(hideStyle, 'the page must hide the redundant Components section')
-assert.match(hideStyle.props.children, /@local\/voice-hooks/)
+assert.match(hideStyle.props.children, /dsh-voice-hooks/)
 assert.match(hideStyle.props.children, /data-plugin-rows/)
 const selects = findAll(rendered, 'select')
 assert.equal(selects.length, 1)

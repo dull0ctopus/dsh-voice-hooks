@@ -3,7 +3,7 @@
 # overridden in the profile patch.
 - insert:
     - id: voice-hooks
-      name: '@local/voice-hooks'
+      name: 'dsh-voice-hooks'
       config:
         finished: DeepSeek finished
         permissionRequired: Permission required

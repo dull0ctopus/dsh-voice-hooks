@@ -13,7 +13,7 @@
  * always continues, and the hook never answers a question, grants a
  * permission, or vetoes a turn.
  *
- * @module @local/voice-hooks
+ * @module dsh-voice-hooks
  */
 import { spawn } from 'node:child_process'
 import z from '@deepseek-ai/schemastery'

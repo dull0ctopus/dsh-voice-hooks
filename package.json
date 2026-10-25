@@ -1,5 +1,5 @@
 {
-  "name": "@local/voice-hooks",
+  "name": "dsh-voice-hooks",
   "version": "1.0.0",
   "private": true,
   "description": "Speaks a configurable macOS message when DSH needs your input, asks for permission, or finishes all pending work.",

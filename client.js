@@ -1,5 +1,5 @@
 window.__ModuleLoader__.load({
-  id: '@local/voice-hooks',
+  id: 'dsh-voice-hooks',
   factory(require) {
     const React = require('react')
     const h = React.createElement
@@ -350,7 +350,7 @@ window.__ModuleLoader__.load({
         h(
           'style',
           { key: 'hide-components' },
-          '[data-plugin-detail="@local/voice-hooks"] [data-plugin-rows]{display:none!important;}',
+          '[data-plugin-detail="dsh-voice-hooks"] [data-plugin-rows]{display:none!important;}',
         ),
         inputField('finished', 'finished', 'voice-hooks-finished'),
         inputField('permissionRequired', 'permissionRequired', 'voice-hooks-permission'),
@@ -405,7 +405,7 @@ window.__ModuleLoader__.load({
                 ctx.slots.register(
                   {
                     name: 'plugins.bundle.config',
-                    key: '@local/voice-hooks',
+                    key: 'dsh-voice-hooks',
                     locale: 'voiceHooks',
                   },
                   Page,
