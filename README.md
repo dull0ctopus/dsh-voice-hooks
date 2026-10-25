@@ -95,13 +95,14 @@ session's working directory.
 
 ## Install
 
-In the DSH **Plugins** page, choose **Add plugin** and enter this Git address:
+This repository is private, so use its SSH Git address in **Add plugin**:
 
 ```text
-git@github.com:dull0ctopus/dsh-voice-hooks.git
+git+ssh://git@github.com/dull0ctopus/dsh-voice-hooks.git
 ```
 
-For a public checkout, the HTTPS form works too:
+DSH stores that dependency as `github:dull0ctopus/dsh-voice-hooks`. For a
+public repository, the HTTPS form works without credentials:
 
 ```text
 https://github.com/dull0ctopus/dsh-voice-hooks.git
