@@ -1,149 +1,65 @@
-# Voice Hooks for DSH
+**A DeepSeek Harness plugin** that speaks configurable macOS messages when DSH needs your input, asks for permission, or finishes all pending work.
 
-Speaks a configurable message when DeepSeek Harness needs you:
+一个 DeepSeek Harness 插件：在需要输入、请求权限或完成所有待处理任务时朗读可配置的 macOS 提示。
 
-| Event | DSH seam | Default message |
-|---|---|---|
-| `Elicitation` | `user-questions/request` | `Input required` |
-| `PermissionRequest` | `approval/request` | `Permission required` |
-| `Stop` | `agent/status` idle with an empty Host inbox | `DeepSeek finished` |
+# Voice Hooks
 
-The `Stop` message is session-level: it fires after the main session has run and
-returned to idle with no Host-side queued input. A 1.5 s grace period also lets
-input queued in the UI start a new turn and cancel the notification.
+## What it does
 
-Each message has a configurable sound (`afplay`) and spoken text (`say`);
-`say` uses the system default voice. The bridge is an observer: it never
-answers a question, grants or denies a permission, or blocks a turn. Hook
-output and exit codes are ignored; a non-zero exit is only logged as a
-diagnostic.
+| When | Default message |
+|---|---|
+| DSH needs your input | `Input required` |
+| DSH requests permission | `Permission required` |
+| The session is idle and its queued work is done | `DeepSeek finished` |
 
-## Where to configure
+Each message is spoken with macOS `say` using the system default voice. A
+system sound (`afplay`) can play first. The finish message is session-level: it
+waits until the session has no Host-side queued input and a short grace period
+passes.
 
-Open **Plugins → Voice Hooks**. The form is on the bundle page itself, above
-**Components**; there is no second-level configuration page. The redundant
-**Components** section is hidden on this bundle page; the bundle-level switch at
-the top still enables or disables the plugin.
+## Configure
 
-The form follows the built-in **Shell** settings page: values are staged, then
-saved together.
+Open **Plugins → Voice Hooks**.
 
-| Field | Default | Meaning |
-|---|---|---|
-| **Session finished** | `DeepSeek finished` | Spoken when the session goes idle after work and its queued input is empty. |
-| **Permission required** | `Permission required` | Spoken for `PermissionRequest`. |
-| **Input required** | `Input required` | Spoken for `Elicitation`. |
-| **Sound** | `/System/Library/Sounds/Ping.aiff` | A select of macOS system sound files. **None** disables the ping. |
+- Edit the three messages and choose a **Sound** (or **None**).
+- Press **Try** on a message to hear the current draft with the current sound,
+  without saving.
+- Press **Save** to apply.
 
-Empty text disables that event's command. **None** for Sound disables only the
-ping, not the spoken message. The Sound select is a build-time snapshot of
-`/System/Library/Sounds`.
-
-Each of the three message fields has a **Try** button. It runs the current
-draft text with the current draft Sound through the Host's `afplay`/`say`,
-without saving the row.
-
-The generated command is equivalent to:
-
-```sh
-afplay '/System/Library/Sounds/Ping.aiff' & say 'Input required'
-```
-
-### YAML form
-
-The installed bundle inserts:
-
-```yaml
-- insert:
-    - id: voice-hooks
-      name: '@local/voice-hooks'
-      config:
-        finished: DeepSeek finished
-        permissionRequired: Permission required
-        inputRequired: Input required
-        sound: /System/Library/Sounds/Ping.aiff
-```
-
-Override the row later with the same fields (the form writes this override for
-you). `config` is replaced wholesale, so restate every field you want to keep.
-
-## Hook stdin and environment
-
-Each command receives one JSON object on stdin:
-
-```json
-{
-  "hook_event_name": "PermissionRequest",
-  "cwd": "/path/to/session/workspace",
-  "session_id": "…",
-  "tool_name": "bash",
-  "call_id": "…",
-  "reason": "…"
-}
-```
-
-`Elicitation` adds `questions` and `tool_name: "ask_user_question"`; `Stop`
-adds `stop_hook_active: false` and, because it is session-level, no `turn`
-field. The command also receives:
-
-- `DSH_HOOK_EVENT`: `Elicitation`, `PermissionRequest`, or `Stop`
-- `DSH_HOOK_CWD`: the command's working directory
-- `DSH_SESSION_ID`: the session id, when known
-
-Commands run with the Host process's environment and privileges, in the
-session's working directory.
+The form is on the plugin's bundle page; there is no Components sub-page.
 
 ## Install
 
-This repository is private, so use its SSH Git address in **Add plugin**:
+In **Plugins → Add plugin**, use the private repository's SSH address:
 
 ```text
 git+ssh://git@github.com/dull0ctopus/dsh-voice-hooks.git
 ```
 
-DSH stores that dependency as `github:dull0ctopus/dsh-voice-hooks`. For a
-public repository, the HTTPS form works without credentials:
+For a public repository, use:
 
 ```text
 https://github.com/dull0ctopus/dsh-voice-hooks.git
 ```
 
-This repository is the bundle: `package.json` declares `dsh.bundle.patch` and
-the `voice-hooks` row. Installation selects the bundle; the Host half activates
-via HMR. A new or changed Client half needs one DSH app restart: the Client
-module graph caches each package's `dsh.client` metadata until restart. A page
-refresh is enough while only the form's code is replaced.
+After installation, enable the bundle. The Host half activates via HMR; a new
+Client half needs one DSH app restart because its module metadata is cached. A
+page refresh is enough for form-only changes.
 
-For local development, install this directory by its absolute path with
-`plugin_manager` instead. Verify the Host row with the read-only `Config`
-Inspection provider (filter by `@local/voice-hooks`).
+## Notes
 
-The Host schema is exported from `index.js`; the browser half is `client.js`
-and registers the `plugins.bundle.config` page for `@local/voice-hooks`. The
-Config fields are volatile so the DSH settings form can edit them live.
+- macOS only (`afplay` and `say`).
+- The Sound list is a snapshot of `/System/Library/Sounds` from this build.
+- Try runs on the Host and needs the form to be writable.
+- Unsent text in the composer is invisible to the Host, so the finish message
+  cannot wait for it. Host-side queued input is respected.
+- One finish message per idle transition; subagent activity is ignored.
 
-Unit test the bridge without a running Harness:
+## Development
 
 ```sh
 node test/hook.test.mjs
 node test/client.test.mjs
 ```
 
-Remove it with `plugin_manager` `remove_bundle` targeting
-`@local/voice-hooks`.
-
-## Known limits
-
-- macOS only: the generated commands use `afplay` and `say`.
-- The Sound list is a snapshot of what was installed when this plugin build
-  was made. Sound files added later do not appear until the plugin is rebuilt.
-- This is a notification bridge, not a permission policy: `PermissionRequest`
-  cannot auto-allow or deny, and `Elicitation` cannot answer.
-- `Elicitation` is DSH's ask-user seam, not MCP elicitation specifically.
-- The plugin is profile-wide: a session-level `Stop` fires for every top-level
-  session on this machine, not only the session currently in view.
-- `Stop` covers main sessions only: one message per idle transition; subagent
-  activity is ignored.
-- Input still sitting in the composer or UI queue that has not reached the Host
-  is invisible. The 1.5 s grace period catches input submitted immediately
-  after the session becomes idle, but cannot wait for an unsent draft.
+Install the local directory by absolute path with `plugin_manager`.
